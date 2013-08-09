@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-#from nltk import tokenize
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Text, Integer, String
 from sqlalchemy.orm import sessionmaker
 
+# config
 DBNAME = 'sqlite:///index.sqlite'
 
 engine = create_engine(DBNAME, echo=True)
@@ -39,9 +39,13 @@ class Document(Base):
     self.text = text
     self.category = category
 
-def start_session():
-  Session = sessionmaker(bind=engine) 
-  return Session()
-  
+class DBInterface():
+  def start_session(self):
+    Session = sessionmaker(bind=engine) 
+    return Session()
+    
+  def create_base(self):
+    Base.metadata.create_all(engine)
 
-Base.metadata.create_all(engine)
+  def drop_base(self):
+    Base.metadata.drop_all(engine)
