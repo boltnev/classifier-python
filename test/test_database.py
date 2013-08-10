@@ -1,6 +1,8 @@
 #!/usr/bin/env python
+import sys, os
+sys.path.insert(0, os.path.abspath('..'))
+from indexer.models.database import *    
 import unittest
-from database import DBInterface, Word, WordFeature, Document 
 
 class TestDatabase(unittest.TestCase):
     def setUp(self):
@@ -34,5 +36,13 @@ class TestDatabase(unittest.TestCase):
         count = s.query(Document).filter_by(text="text is text", category="Test").count()
         self.assertEqual(count, 1)
         
+    def test_create_word_feature(self):
+        document = Document("text is text", "Test")
+        s = DBInterface.start_session()
+        word = Word("text")
+        s = DBInterface.start_session()
+        s.add_all([word, document])
+        s.commit()
+        wfeature = WordFeature(document, word)
 if __name__ == '__main__':
     unittest.main()

@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship, backref
 # config
 DBNAME = 'sqlite:///index.sqlite'
 
-engine = create_engine(DBNAME, echo=True)
+engine = create_engine(DBNAME, echo=False)
 
 Base = declarative_base()
 
@@ -49,9 +49,9 @@ class WordFeature(Base):
     document = relationship("Document", backref=backref('words'))
     word = relationship("Word")
    
-    def __init__(self, text, count):
-        self.text = text
-        self.count = count
+    def __init__(self, document, word):
+        self.document_id = document.id
+        self.word_id = word.id
     
 class DBInterface():
     @staticmethod
