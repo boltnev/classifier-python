@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Text, Integer, String, ForeignKey
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import relationship, backref
 
 # config
 DBNAME = 'sqlite:///index.sqlite'
@@ -12,47 +10,10 @@ engine = create_engine(DBNAME, echo=False)
 
 Base = declarative_base()
 
-#/* Base */
-class Word(Base):
-    __tablename__ = 'words'
-    id = Column(Integer, primary_key=True)
-    word  = Column(String, index=True)
-    count = Column(Integer, default=1)
+from document import Document
+from word_feature import WordFeature
+from word import Word
 
-    def __init__(self, word):
-        self.word = word
-        self.count = 1
-
-    def __repl__(self):
-        return self.word
-
-    def count_inc(self):
-        self.count += 1
-
-class Document(Base):
-    __tablename__ = 'documents'
-    id = Column(Integer, primary_key=True)
-    text =  Column(Text)
-    category = Column(String)  
-
-    def __init__(self, text, category):
-        self.text = text
-        self.category = category
-
-class WordFeature(Base):
-    __tablename__ = 'word_features'
-    id = Column(Integer, primary_key=True)
-    word_id = Column(Integer, ForeignKey('words.id'))  
-    document_id =  Column(Integer, ForeignKey('documents.id'))
-
-    count = Column(Integer, default=1)
-    document = relationship("Document", backref=backref('words'))
-    word = relationship("Word")
-   
-    def __init__(self, document, word):
-        self.document_id = document.id
-        self.word_id = word.id
-    
 class DBInterface():
     @staticmethod
     def start_session():

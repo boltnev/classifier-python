@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 import sys, os
 sys.path.insert(0, os.path.abspath('..'))
-from indexer.models.database import *    
+
+from indexer.models.database import *
+
 import unittest
 
 class TestDatabase(unittest.TestCase):
