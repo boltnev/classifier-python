@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Text, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, backref
-from database import Base
+from database import *
+from word import Word
+from nltk.tokenize import RegexpTokenizer
 
 class Document(Base):
     __tablename__ = 'documents'
@@ -11,3 +13,20 @@ class Document(Base):
     def __init__(self, text, category):
         self.text = text
         self.category = category
+
+    def tokenize(self):
+        tokenizer = RegexpTokenizer(r'\w+')
+        return tokenizer.tokenize(self.text.decode('utf-8').lower())
+        
+    def index(self):
+        tokens = self.tokenize()
+        token_dictionary = dict()
+        for token in tokens:
+            if token not in token_dictionary:
+                token_dictionary[token] = 1
+            else:
+                token_dictionary[token] = token_dictionary[token] + 1
+            print token_dictionary
+        
+            #word = s.query(Word).filter_by(word=token).first()
+            
