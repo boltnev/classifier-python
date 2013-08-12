@@ -2,8 +2,7 @@
 import sys, os
 sys.path.insert(0, os.path.abspath('..'))
 
-from indexer.models.database import *
-
+from indexer.indexer import *
 import unittest
 
 class TestDatabase(unittest.TestCase):
