@@ -12,7 +12,10 @@ class WordFeature(Base):
     document = relationship("Document", backref=backref('words'))
     word = relationship("Word")
    
-    def __init__(self, document, word):
+    def __init__(self, document, word, count=1):
         self.document_id = document.id
         self.word_id = word.id
+        self.count = count
     
+    def count_inc(self, n=1):
+        self.count += n

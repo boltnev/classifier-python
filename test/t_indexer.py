@@ -4,7 +4,7 @@ import unittest
 
 test_text = """This is test text. This text is for text classifier test"""
     # text 3
-    # text 2
+    # test 2
     # is 2
     # this 2
     # for 1
@@ -23,6 +23,14 @@ class TestIndex(unittest.TestCase):
         s.commit()
         document.index()
         self.assertEqual(len(document.words), 6)
-
+        
+        for word_feature in document.words:
+            if word_feature.word =="text":
+                self.assertEqual(word_feature.count == 3)
+            if word_feature.word =="test":
+                self.assertEqual(word_feature.count == 2)
+            if word_feature.word =="classifier":
+                self.assertEqual(word_feature.count == 1)
+    
 if __name__ == '__main__':
     unittest.main()

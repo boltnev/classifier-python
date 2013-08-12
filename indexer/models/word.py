@@ -9,12 +9,12 @@ class Word(Base):
     word  = Column(String, index=True)
     count = Column(Integer, default=1)
 
-    def __init__(self, word):
+    def __init__(self, word, count = 1):
         self.word = word
-        self.count = 1
+        self.count = count
 
     def __repl__(self):
         return self.word
 
-    def count_inc(self):
-        self.count += 1
+    def count_inc(self, n=1):
+        self.count += n

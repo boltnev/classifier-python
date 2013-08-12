@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Text, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, backref
-from database import *
-from word import Word
+from sqlalchemy.sql import exists
+from indexer.indexer import *
 from nltk.tokenize import RegexpTokenizer
 
 class Document(Base):
@@ -25,8 +25,20 @@ class Document(Base):
             if token not in token_dictionary:
                 token_dictionary[token] = 1
             else:
-                token_dictionary[token] = token_dictionary[token] + 1
-            print token_dictionary
+                token_dictionary[token] += 1
+        s = DBInterface.start_session()
         
-            #word = s.query(Word).filter_by(word=token).first()
+        for token in token_dictionary.keys():
+            #Refactoring 
+            if(not s.query(Word).filter((exists().where(Word.word==token))).scalar()):
+                word = Word(token, token_dictionary[token])
+                s.add(word)
+            else:
+                word = s.query(Word).filter(word=token).first()
+                word.count_inc(token_dictionary[token])
+                        
+            word_feature = WordFeature(self, word, token_dictionary[token])
             
+            s.add(word_feature)
+        s.commit()
+    
