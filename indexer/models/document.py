@@ -29,14 +29,13 @@ class Document(Base):
         s = DBInterface.start_session()
         
         for token in token_dictionary.keys():
-            #Refactoring 
-            if(not s.query(Word).filter((exists().where(Word.word==token))).scalar()):
+            if(s.query(Word).filter_by(word=token).count() == 0 ):
                 word = Word(token, token_dictionary[token])
                 s.add(word)
             else:
-                word = s.query(Word).filter(word=token).first()
+                word = s.query(Word).filter_by(word=token).first()
                 word.count_inc(token_dictionary[token])
-                        
+            s.commit()            
             word_feature = WordFeature(self, word, token_dictionary[token])
             
             s.add(word_feature)
