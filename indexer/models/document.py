@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Text, Integer, String, ForeignKey
+from sqlalchemy import Column, Text, Integer, String, Date, Boolean, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import exists
 from indexer.indexer import *
@@ -9,6 +9,12 @@ class Document(Base):
     id = Column(Integer, primary_key=True)
     text =  Column(Text)
     category = Column(String)  
+    title = Column(String)
+    author = Column(String)
+    date  = Column(Date)
+    indexed = Column(Boolean, default=False) 
+    train = Column(Boolean, default=False)
+    test = Column(Boolean, default=False)
 
     def __init__(self, text, category):
         self.text = text

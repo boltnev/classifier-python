@@ -27,12 +27,16 @@ class TestDatabase(unittest.TestCase):
         
     def test_create_document(self):
         document = Document("text is text", "Test")
+        document.train = True
         s = DBInterface.start_session()
         s.add(document)
         s.commit()
-        count = s.query(Document).filter_by(text="text is text", category="Test").count()
+        documents = s.query(Document).filter_by(text="text is text", category="Test").all()
+        count = len(documents)
         self.assertEqual(count, 1)
-        
+        doc = documents[0]
+        self.assertEqual(doc.train, True)
+
     def test_create_word_feature(self):
         document = Document("text is text", "Test")
         s = DBInterface.start_session()
