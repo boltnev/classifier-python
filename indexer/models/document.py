@@ -13,12 +13,15 @@ class Document(Base):
     author = Column(String)
     date  = Column(Date)
     indexed = Column(Boolean, default=False) 
-    train = Column(Boolean, default=False)
-    test = Column(Boolean, default=False)
+    doc_type = Column(String)
 
-    def __init__(self, text, category):
-        self.text = text
-        self.category = category
+    def __init__(self, attr_dictionary):
+        self.text = attributes['text']
+        self.category = attributes['category']
+        self.title = attributes['title']
+        self.author = attributes['author']
+        self.date  = attributes['date']
+        self.doc_type = attributes['doc_type']
 
     def tokenize(self):
         tokenizer = RegexpTokenizer(r'\w+')

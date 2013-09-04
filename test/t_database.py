@@ -26,7 +26,7 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(testword.count, 2)    
         
     def test_create_document(self):
-        document = Document("text is text", "Test")
+        document = Document({text:"text is text", category:"Test", date:'17', })
         document.train = True
         s = DBInterface.start_session()
         s.add(document)
