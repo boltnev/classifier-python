@@ -17,7 +17,7 @@ class TestIndex(unittest.TestCase):
         DBInterface.create_base()
             
     def test_document(self):
-        document = Document(test_text, test_class)
+        document = Document({'text':test_text, 'category':test_class})
         s = DBInterface.start_session()
         s.add(document)
         s.commit()

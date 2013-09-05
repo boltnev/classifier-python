@@ -11,17 +11,17 @@ class Document(Base):
     category = Column(String)  
     title = Column(String)
     author = Column(String)
-    date  = Column(Date)
+    date  = Column(String)
     indexed = Column(Boolean, default=False) 
     doc_type = Column(String)
 
-    def __init__(self, attr_dictionary):
-        self.text = attributes['text']
-        self.category = attributes['category']
-        self.title = attributes['title']
-        self.author = attributes['author']
-        self.date  = attributes['date']
-        self.doc_type = attributes['doc_type']
+    def __init__(self, attributes):
+        self.text = attributes.get('text', None)
+        self.category = attributes.get('category', None)
+        self.title = attributes.get('title', None)
+        self.author = attributes.get('author', None)
+        self.date  = attributes.get('date', None)
+        self.doc_type = attributes.get('doc_type', None)
 
     def tokenize(self):
         tokenizer = RegexpTokenizer(r'\w+')

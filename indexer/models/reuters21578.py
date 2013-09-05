@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 import xml.etree.ElementTree as ET
-from indexer.indexer import Document 
+from indexer.indexer import Document, DBInterface
 
 filenames = ['reut2-00' + str(i) + '.xml' for i in xrange(10)] + ['reut2-0' + str(i) + '.xml' for i in xrange(10, 22)]
 directory = 'test/reuters21578/'
@@ -26,9 +26,10 @@ def load_document(document):
       attributes['categories'] = ",".join(categories)
     if element.tag == 'DATE':
       attributes['date'] = element.text
-         
-  print attributes
-
+  s = DBInterface.start_session()
+  document = Document(attributes)
+  s.add(document)
+  s.commit()
 
 def load_corpus():
   i = 0

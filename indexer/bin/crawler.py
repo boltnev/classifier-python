@@ -23,7 +23,7 @@ class Crawler:
     def create_document(self, path, d_class):
         file = open(path, 'r')
         text = repr(file.read())
-        document = Document(text, d_class)
+        document = Document({'text':text, 'category':d_class})
         s = DBInterface.start_session()
         s.add(document)
         s.commit()
