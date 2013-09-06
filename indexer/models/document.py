@@ -4,16 +4,18 @@ from sqlalchemy.sql import exists
 from indexer.indexer import *
 from nltk.tokenize import RegexpTokenizer
 
+VARCHARL = 256
+
 class Document(Base):
     __tablename__ = 'documents'
     id = Column(Integer, primary_key=True)
     text =  Column(Text)
-    category = Column(String)  
-    title = Column(String)
-    author = Column(String)
-    date  = Column(String)
+    category = Column(String(VARCHARL))  
+    title = Column(String(VARCHARL))
+    author = Column(String(VARCHARL))
+    date  = Column(String(VARCHARL))
     indexed = Column(Boolean, default=False) 
-    doc_type = Column(String)
+    doc_type = Column(String(VARCHARL))
 
     def __init__(self, attributes):
         self.text = attributes.get('text', None)

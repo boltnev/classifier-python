@@ -4,17 +4,21 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # config
-DBNAME = 'sqlite:///index.sqlite'
+DBNAME ='mysql+mysqldb://tclass:tclass@localhost/tclassifier'
+# another options
+#'sqlite:///index.sqlite'
 
-engine = create_engine(DBNAME, echo=False)
+engine = create_engine(DBNAME, echo=True)
 
 Base = declarative_base()
 
 class DBInterface():
+    session = None
     @staticmethod
     def start_session():
-        Session = sessionmaker(bind=engine) 
-        return Session()
+        if DBInterface.session is None:
+          DBInterface.session = sessionmaker(bind=engine) 
+        return DBInterface.session()
     
     @staticmethod
     def create_base():
