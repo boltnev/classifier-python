@@ -32,3 +32,9 @@ class DBInterface():
     @staticmethod    
     def drop_base():
         Base.metadata.drop_all(engine)
+        
+    @staticmethod    
+    def recreate_base():
+        DBInterface.get_session().close()
+        DBInterface.drop_base()
+        DBInterface.create_base()

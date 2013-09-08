@@ -7,8 +7,7 @@ test_path = 'test/test_data'
 
 class TestCrawler(unittest.TestCase):
     def setUp(self):
-        DBInterface.drop_base()
-        DBInterface.create_base()
+        DBInterface.recreate_base()
         
     def test_create(self):
         crawler = Crawler(test_path)

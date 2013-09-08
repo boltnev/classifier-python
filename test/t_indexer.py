@@ -13,8 +13,7 @@ test_class = "Testing"
 
 class TestIndex(unittest.TestCase):
     def setUp(self):
-        DBInterface.drop_base()
-        DBInterface.create_base()
+        DBInterface.recreate_base()
             
     def test_document(self):
         document = Document({'text':test_text, 'category':test_class})
