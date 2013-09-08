@@ -28,8 +28,8 @@ class Document(Base):
     def tokenize(self):
         tokenizer = RegexpTokenizer(r'\w+')
         return tokenizer.tokenize(self.text.decode('utf-8').lower())
-        
-    def index(self):
+    
+    def word_dict(self):
         tokens = self.tokenize()
         token_dictionary = dict()
         for token in tokens:
@@ -37,8 +37,12 @@ class Document(Base):
                 token_dictionary[token] = 1
             else:
                 token_dictionary[token] += 1
-        s = DBInterface.start_session()
+        return token_dictionary
         
+    def word_to_index(self):
+        s = DBInterface.get_session()
+        token_dictionary = self.word_dict()
+    
         for token in token_dictionary.keys():
             if(s.query(Word).filter_by(word=token).count() == 0 ):
                 word = Word(token, token_dictionary[token])
@@ -46,9 +50,20 @@ class Document(Base):
             else:
                 word = s.query(Word).filter_by(word=token).first()
                 word.count_inc(token_dictionary[token])
-            s.commit()            
+            s.commit()
+                      
             word_feature = WordFeature(self, word, token_dictionary[token])
             
             s.add(word_feature)
         s.commit()
+                    
+    def index(self):
+        s = DBInterface.get_session()
+    
+        self.word_to_index()
+        self.indexed = True       
+        s.commit()
+        
+        return self.indexed        
+        
     

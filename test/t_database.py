@@ -9,7 +9,7 @@ class TestDatabase(unittest.TestCase):
             
     def test_create_word(self):
         word = Word("test")
-        s = DBInterface.start_session()
+        s = DBInterface.get_session()
         s.add(word)
         s.commit()
         count = s.query(Word).filter_by(word="test").count()
@@ -17,7 +17,7 @@ class TestDatabase(unittest.TestCase):
         
     def test_inc_word_count(self):
         word = Word("test")
-        s = DBInterface.start_session()
+        s = DBInterface.get_session()
         s.add(word)
         s.commit()
         word.count_inc()
@@ -28,7 +28,7 @@ class TestDatabase(unittest.TestCase):
     def test_create_document(self):
         document = Document({'text':"text is text", 'category':"Test", 'date':"17" })
         document.train = True
-        s = DBInterface.start_session()
+        s = DBInterface.get_session()
         s.add(document)
         s.commit()
         documents = s.query(Document).filter_by(text="text is text", category="Test").all()
@@ -39,9 +39,9 @@ class TestDatabase(unittest.TestCase):
 
     def test_create_word_feature(self):
         document = Document({'text':"text is text", 'category':"Test", 'date':"17" })
-        s = DBInterface.start_session()
+        s = DBInterface.get_session()
         word = Word("text")
-        s = DBInterface.start_session()
+        s = DBInterface.get_session()
         s.add_all([word, document])
         s.commit()
         wfeature = WordFeature(document, word)

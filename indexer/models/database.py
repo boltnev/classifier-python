@@ -8,18 +8,23 @@ DBNAME ='mysql+mysqldb://tclass:tclass@localhost/tclassifier'
 # another options
 #'sqlite:///index.sqlite'
 
-engine = create_engine(DBNAME, echo=True)
+engine = create_engine(DBNAME, echo=False)
 
 Base = declarative_base()
 
 class DBInterface():
     session = None
     @staticmethod
-    def start_session():
+    def get_session():
         if DBInterface.session is None:
-          DBInterface.session = sessionmaker(bind=engine) 
-        return DBInterface.session()
+          s = sessionmaker(bind=engine)
+          DBInterface.session = s()
+        return DBInterface.session
     
+    @staticmethod
+    def stop_session():
+        DBInterface.session = None
+        
     @staticmethod
     def create_base():
         Base.metadata.create_all(engine)

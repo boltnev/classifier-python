@@ -26,7 +26,7 @@ def load_document(document):
       attributes['categories'] = ",".join(categories)
     if element.tag == 'DATE':
       attributes['date'] = element.text
-  s = DBInterface.start_session()
+  s = DBInterface.get_session()
   document = Document(attributes)
   s.add(document)
   s.commit()

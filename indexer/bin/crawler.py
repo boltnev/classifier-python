@@ -24,7 +24,7 @@ class Crawler:
         file = open(path, 'r')
         text = repr(file.read())
         document = Document({'text':text, 'category':d_class})
-        s = DBInterface.start_session()
+        s = DBInterface.get_session()
         s.add(document)
         s.commit()
         document.index()

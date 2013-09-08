@@ -18,19 +18,21 @@ class TestIndex(unittest.TestCase):
             
     def test_document(self):
         document = Document({'text':test_text, 'category':test_class})
-        s = DBInterface.start_session()
+        s = DBInterface.get_session()
         s.add(document)
         s.commit()
-        document.index()
+        document.index()        
+        
         self.assertEqual(len(document.words), 6)
         
         for word_feature in document.words:
             if word_feature.word =="text":
-                self.assertEqual(word_feature.count == 3)
+                self.assertEqual(word_feature.count, 3)
             if word_feature.word =="test":
-                self.assertEqual(word_feature.count == 2)
+                self.assertEqual(word_feature.count, 2)
             if word_feature.word =="classifier":
-                self.assertEqual(word_feature.count == 1)
-    
+                self.assertEqual(word_feature.count, 1)
+        self.assertEqual(document.indexed, True)
+        
 if __name__ == '__main__':
     unittest.main()
