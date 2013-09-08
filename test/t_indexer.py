@@ -33,5 +33,20 @@ class TestIndex(unittest.TestCase):
                 self.assertEqual(word_feature.count, 1)
         self.assertEqual(document.indexed, True)
         
+    def test_index_all(self):
+        document = Document({'text':test_text, 'category':test_class})
+        s = DBInterface.get_session()
+        s.add(document)
+        s.commit()
+        
+        not_indexed = s.query(Document).filter_by(indexed=False).count()
+        self.assertEqual(not_indexed, 1)
+        
+        Document.index_all()        
+        
+        not_indexed = s.query(Document).filter_by(indexed=False).count()
+        self.assertEqual(not_indexed, 0)
+        
+        
 if __name__ == '__main__':
     unittest.main()

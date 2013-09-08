@@ -64,6 +64,13 @@ class Document(Base):
         self.indexed = True       
         s.commit()
         
-        return self.indexed        
+        return self.indexed    
+        
+    @staticmethod
+    def index_all():
+        documents = DBInterface.get_session().query(Document).filter_by(indexed=False).all()
+        for document in documents:
+            document.index()
+        
         
     
