@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 
 # config
@@ -16,11 +17,19 @@ class DBInterface():
     session = None
     @staticmethod
     def get_session():
-        if DBInterface.session is None:
-          s = sessionmaker(bind=engine)
-          DBInterface.session = s()
+        #if DBInterface.session is None:
+        s = sessionmaker(bind=engine, expire_on_commit=False)
+        Session = scoped_session(s)          
+        DBInterface.session = Session()
         return DBInterface.session
     
+    @staticmethod    
+    def s_session():
+        s = sessionmaker(bind=engine, expire_on_commit=False)
+        Session = scoped_session(s)          
+        return Session
+    
+
     @staticmethod
     def stop_session():
         DBInterface.session = None

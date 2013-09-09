@@ -2,14 +2,14 @@ from sqlalchemy import Column, Text, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from database import Base
 
-VARCHARL = 256
+VARCHARL = 64
 
 #/* Base */
 class Word(Base):
     __tablename__ = 'words'
     id = Column(Integer, primary_key=True)
-    word  = Column(String(VARCHARL), index=True)
-    count = Column(Integer, default=1)
+    word  = Column(String(VARCHARL), index=True, unique=True)
+    count = Column(Integer, default=1, index=True)
 
     def __init__(self, word, count = 1):
         self.word = word

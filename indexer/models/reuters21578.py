@@ -10,6 +10,7 @@ def load_document(document):
   attributes = dict()
   categories = list()
   attributes['doc_type'] = document.attrib['LEWISSPLIT']
+  
   for child in document.findall("TEXT"):
     for element in child:
       if element.tag == 'TITLE':
@@ -26,10 +27,17 @@ def load_document(document):
       attributes['categories'] = ",".join(categories)
     if element.tag == 'DATE':
       attributes['date'] = element.text
-  s = DBInterface.get_session()
-  document = Document(attributes)
-  s.add(document)
-  s.commit()
+  try:
+    if attributes['text'] == "":
+      return False
+    
+    s = DBInterface.get_session()
+    document = Document(attributes)
+    s.add(document)
+    s.commit()
+    s.close()
+  except:
+    return False    
 
 def load_corpus():
   i = 0
