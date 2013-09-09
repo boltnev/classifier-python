@@ -17,11 +17,10 @@ class DBInterface():
     session = None
     @staticmethod
     def get_session():
-        #if DBInterface.session is None:
         s = sessionmaker(bind=engine, expire_on_commit=False)
         Session = scoped_session(s)          
         DBInterface.session = Session()
-        return DBInterface.session
+        return Session()
     
     @staticmethod    
     def s_session():
@@ -44,6 +43,5 @@ class DBInterface():
         
     @staticmethod    
     def recreate_base():
-        DBInterface.get_session().close()
         DBInterface.drop_base()
         DBInterface.create_base()

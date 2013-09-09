@@ -20,7 +20,10 @@ class TestIndex(unittest.TestCase):
         s = DBInterface.get_session()
         s.add(document)
         s.commit()
-        document.index()        
+        s.expunge(document)
+        self.assertEqual(document.index(), True)         
+        
+        document = s.query(Document).first()
         
         self.assertEqual(len(document.words), 6)
         
@@ -32,21 +35,43 @@ class TestIndex(unittest.TestCase):
             if word_feature.word =="classifier":
                 self.assertEqual(word_feature.count, 1)
         self.assertEqual(document.indexed, True)
+        s.close()
+        
+
+    def test_locked_document(self):
+        document = Document({'text':test_text, 'category':test_class})
+        document.locked = True
+        s = DBInterface.get_session()
+        s.add(document)
+        s.commit()
+        s.expunge(document)
+        self.assertEqual(document.index(), False)
+        s.close()
         
     def test_index_all(self):
         document = Document({'text':test_text, 'category':test_class})
         s = DBInterface.get_session()
-        s.add(document)
+        s.add(document)      
         s.commit()
+        s.expunge_all()                    
         
+        s.close()
+        s = DBInterface.get_session()        
         not_indexed = s.query(Document).filter_by(indexed=False).count()
+        s.expunge_all()
         self.assertEqual(not_indexed, 1)
         
-        Document.index_all()        
+        Document.index_all()
         
+        s.close()
+        s = DBInterface.get_session()                
         not_indexed = s.query(Document).filter_by(indexed=False).count()
+        s.expunge_all()
+        s.close()
         self.assertEqual(not_indexed, 0)
-        
+
+    def test_test(self):
+        pass
         
 if __name__ == '__main__':
     unittest.main()

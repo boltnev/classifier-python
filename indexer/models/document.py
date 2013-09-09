@@ -17,11 +17,10 @@ class Document(Base):
     author = Column(String(VARCHARL), index=True)
     date  = Column(String(VARCHARL), index=True)
     indexed = Column(Boolean, default=False, index=True) 
-    word_count = Column(Integer)
-    uniq_words = Column(Integer)
+    word_count = Column(Integer, index=True)
+    uniq_words = Column(Integer, index=True)
     doc_type = Column(String(VARCHARL), index=True)
-
-    threads = []
+    locked = Column(Boolean, default=False)
     
     def __init__(self, attributes):
         self.text = attributes['text']
@@ -36,7 +35,7 @@ class Document(Base):
     def tokenize(self):
         tokenizer = RegexpTokenizer(r'\w+')
         if self.text:
-          return tokenizer.tokenize(self.text.decode('utf-8').lower())
+            return tokenizer.tokenize(self.text.decode('utf-8').lower())
     
     def word_dict(self):
         tokens = self.tokenize()
@@ -66,11 +65,13 @@ class Document(Base):
             word_feature = WordFeature(self, word, token_dictionary[token])
             
             s.add(word_feature)
-        s.commit()
+            s.commit()
                     
     def index(self):
         if self.indexed:
-          return True
+            return True
+        if self.locked:
+            return False
         s_session = DBInterface.s_session()
         s = s_session()
 
@@ -83,15 +84,21 @@ class Document(Base):
         self.indexed = True
         s.add(self)
         s.commit()
-        
         s.expunge_all()
-        s.close()
         s_session.remove()
+        s.close()
         return self.indexed    
+    
+    @staticmethod
+    def not_indexed_count():
+        s = DBInterface.get_session()
+        not_indexed = s.query(Document).filter_by(indexed=False).count()
+        s.close()
+        return not_indexed
         
     @staticmethod
     def index_all():
-        while(DBInterface.get_session().query(Document).filter_by(indexed=False).count() > 0):
+        while( Document.not_indexed_count() > 0):
            s_session = DBInterface.s_session()
            s = s_session
            documents = s.query(Document).filter_by(indexed=False).limit(120).all()
@@ -101,19 +108,26 @@ class Document(Base):
            if len(documents) < 40:
                for document in documents:
                    document.index()
-                   
-           for document in documents:
-               if len(Document.threads) < 40:    
-                   th = threading.Thread(target=document.index)
-                   th.start()
-                   Document.threads.append(th)    
-               else:
-                   for thread in Document.threads:
-                       thread.join()
-                       Document.threads = []
-           for thread in Document.threads:
-               thread.join()
-           Document.threads = []
+           else:
+               Document.index_multithread(documents)
+           
+
+    @staticmethod
+    def index_multithread(documents):
+        thread_list = []
+        for document in documents:
+            if len(thread_list) < 40:    
+                th = threading.Thread(target=document.index)
+                th.start()
+                thread_list.append(th)    
+            else:
+                for thread in thread_list:
+                    thread.join()
+                    thread_list = []
+        for thread in thread_list:
+            thread.join()
+        
+        
         
       
  
