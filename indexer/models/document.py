@@ -75,6 +75,10 @@ class Document(Base):
         s_session = DBInterface.s_session()
         s = s_session()
 
+        self.locked = True
+        s.add(self)
+        s.commit()
+        
         try:
             self.word_to_index(s)
         # Not obvious hack for avoiding of multithreading errors 
@@ -82,8 +86,9 @@ class Document(Base):
             return False
  
         self.indexed = True
-        s.add(self)
+        self.locked = False
         s.commit()
+
         s.expunge_all()
         s_session.remove()
         s.close()
@@ -92,7 +97,7 @@ class Document(Base):
     @staticmethod
     def not_indexed_count():
         s = DBInterface.get_session()
-        not_indexed = s.query(Document).filter_by(indexed=False).count()
+        not_indexed = s.query(Document).filter_by(indexed=False, locked=False).count()
         s.close()
         return not_indexed
         
