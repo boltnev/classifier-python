@@ -21,14 +21,20 @@ s.add_all([document1, document2, document3])
 s.commit()
 s.expunge_all()
 s.close()
- 
+Document.index_all() 
 
 class TestNaiveBayes(unittest.TestCase):
             
     def test_apriory(self):
         self.assertEqual(NaiveBayes.apriory(test_category1), float(2) / 3)
         self.assertEqual(NaiveBayes.apriory(test_category2), float(1) / 3)
-
+    
+    def test_likehood(self):
+        s = DBInterface.get_session()
+        word = s.query(Word).filter_by(word="text").first()
+        s.close()
+        self.assertEqual(NaiveBayes.likelihood(word, test_category1), float(3) / 20)
+        self.assertEqual(NaiveBayes.likelihood(word, test_category2), float(1) / 11)
 
 if __name__ == '__main__':
     unittest.main()
