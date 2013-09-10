@@ -129,8 +129,8 @@ class Document(Base):
                 for thread in thread_list:
                     thread.join()
                     thread_list = []
-        for thread in thread_list:
-            thread.join()
+            for thread in thread_list:
+                thread.join()
         
         
         

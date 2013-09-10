@@ -24,7 +24,7 @@ def load_document(document):
     if element.tag == 'TOPICS':
       for topic in element:
         categories.append(topic.text)
-      attributes['categories'] = ",".join(categories)
+      attributes['category'] = ",".join(categories)
     if element.tag == 'DATE':
       attributes['date'] = element.text
   try:
