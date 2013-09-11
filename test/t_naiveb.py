@@ -4,18 +4,19 @@ from indexer.indexer import *
 from classifier.naivebayes import *
 import unittest
 
-test_text1 = """This is test text. This text is for text classifier test"""
-test_text2 = """software testing is good and useful for all mankind"""
-test_category1 = "Testing"
+text1 = """This is test text. This text is for text classifier test"""
+text2 = """software testing is good and useful for all mankind"""
+category1 = "Testing"
 
-test_text3 = """To be or not to be? that is the text question"""
-test_category2 = "Shakespeare"
+text3 = """To be or not to be? that is the text question"""
+category2 = "Shakespeare"
  
+test_text = """I'm doing text processing unit test in python. I think it is very good""" # cat1
 DBInterface.recreate_base()
 
-document1 = Document({'text':test_text1, 'category':test_category1})
-document2 = Document({'text':test_text2, 'category':test_category1})
-document3 = Document({'text':test_text3, 'category':test_category2})
+document1 = Document({'text':text1, 'category':category1, 'doc_type':'TRAIN'})
+document2 = Document({'text':text2, 'category':category1, 'doc_type':'TRAIN'})
+document3 = Document({'text':text3, 'category':category2, 'doc_type':'TRAIN'})
 s = DBInterface.get_session()
 s.add_all([document1, document2, document3])
 s.commit()
@@ -26,15 +27,27 @@ Document.index_all()
 class TestNaiveBayes(unittest.TestCase):
             
     def test_apriory(self):
-        self.assertEqual(NaiveBayes.apriory(test_category1), float(2) / 3)
-        self.assertEqual(NaiveBayes.apriory(test_category2), float(1) / 3)
+        self.assertEqual(NaiveBayes.apriory(category1), float(2) / 3)
+        self.assertEqual(NaiveBayes.apriory(category2), float(1) / 3)
     
     def test_likehood(self):
         s = DBInterface.get_session()
         word = s.query(Word).filter_by(word="text").first()
         s.close()
-        self.assertEqual(NaiveBayes.likelihood(word, test_category1), float(3) / 20)
-        self.assertEqual(NaiveBayes.likelihood(word, test_category2), float(1) / 11)
+        self.assertEqual(NaiveBayes.likelihood(word, category1), float(4) / 22)
+        self.assertEqual(NaiveBayes.likelihood(word, category2), float(2) / 13)
+
+    def test_aposteriory(self):
+        s = DBInterface.get_session()
+        document = Document({'text':test_text, 'category':'', 'doc_type':'TEST'})
+        s.add(document)
+        s.commit()
+        s.close()
+        document.index()
+        print NaiveBayes.aposteriory(category1, document)
+      
+    def test_all_categories(self):
+        self.assertEqual(NaiveBayes.all_categories(), [category1, category2])
 
 if __name__ == '__main__':
     unittest.main()

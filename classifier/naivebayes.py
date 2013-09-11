@@ -6,15 +6,24 @@ class NaiveBayes():
 
     def max_aposteriory(document):
         pass
-
-    def aposteriory(category, document):
-        pass
+    
+    @staticmethod
+    def aposteriory(category_name, document):
+        s = DBInterface.get_session()
+        s.add(document)
+        result = 0
+        apriory = NaiveBayes.apriory(category_name)
+        
+        for word_feature in document.words:
+            result += apriory * NaiveBayes.likelihood(word_feature.word, category_name)
+        s.close()
+        return result
 
     @staticmethod
     def apriory(category_name):
         s = DBInterface.get_session()
-        all_doc_count = s.query(Document).count()    
-        category_count = s.query(Document).filter_by(category=category_name).count()
+        all_doc_count = s.query(Document).filter_by(doc_type='TRAIN').count()    
+        category_count = s.query(Document).filter_by(category=category_name, doc_type='TRAIN').count()
         result = float(category_count) / all_doc_count
         s.close()
         return result  
@@ -26,18 +35,32 @@ class NaiveBayes():
         sql = "select sum(`word_features`.count) from word_features " +  \
               "join `documents` on `documents`.id = `word_features`.document_id " + \
               "join `words` on `words`.id =`word_features`.word_id " + \
-              "where word_id = %d and category='%s'; " % (word.id, category_name)
+              "where word_id = %d and category='%s' AND `documents`.doc_type = 'TRAIN'; " % (word.id, category_name)
 
         word_category_count = s.execute(sql).scalar()
-        
+        if word_category_count is None:
+            word_category_count = 0
         sql = "select sum(`word_features`.count) from word_features " +  \
               "join `documents` on `documents`.id = `word_features`.document_id " + \
               "join `words` on `words`.id =`word_features`.word_id " + \
-              "where category='%s'; " % (category_name,)
+              "where category='%s' AND `documents`.doc_type = 'TRAIN'; " % (category_name,)
 
-        all_category_count = s.execute(sql).scalar()
+        all_category_word_count = s.execute(sql).scalar()
+        if all_category_word_count is None:
+            all_category_word_count = 0
 
-        result = float(word_category_count) / float(all_category_count) 
+        result = float(word_category_count + 1) / float(all_category_word_count + len(NaiveBayes.all_categories())) 
         
         s.close()
-        return result 
+        return result
+
+    @staticmethod
+    def all_categories():
+        s = DBInterface.get_session()
+        query_result = s.execute("select distinct(category) from documents where doc_type = 'TRAIN';")
+       
+        categories = [list(category)[0] for category in query_result ]
+
+        s.close()
+        return categories      
+ 
