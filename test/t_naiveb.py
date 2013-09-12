@@ -1,5 +1,6 @@
 #/usr/bin/env python
 # coding :utf-8
+from test_db_conf import TEST_DBCONF
 from indexer.indexer import *
 from classifier.naivebayes import *
 import unittest
@@ -12,7 +13,7 @@ text3 = """To be or not to be? that is the text question"""
 category2 = "Shakespeare"
  
 test_text = """I'm doing text processing unit test in python. I think it is very good""" # cat1
-DBInterface.recreate_base()
+DBInterface.recreate_base(TEST_DBCONF)
 
 document1 = Document({'text':text1, 'category':category1, 'doc_type':'TRAIN'})
 document2 = Document({'text':text2, 'category':category1, 'doc_type':'TRAIN'})

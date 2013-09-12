@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from test_db_conf import TEST_DBCONF
 from indexer.indexer import *
 import unittest
 
@@ -13,7 +14,7 @@ test_class = "Testing"
 
 class TestIndex(unittest.TestCase):
     def setUp(self):
-        DBInterface.recreate_base()
+        DBInterface.recreate_base(TEST_DBCONF)
             
     def test_document(self):
         document = Document({'text':test_text, 'category':test_class})

@@ -5,43 +5,46 @@ from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 
 # config
-DBNAME ='mysql+mysqldb://tclass:tclass@localhost/tclassifier'
+DBCONF_DEFAULT = 'mysql+mysqldb://tclass:tclass@localhost/tclassifier'
 # another options
 #'sqlite:///index.sqlite'
-
-engine = create_engine(DBNAME, echo=False)
 
 Base = declarative_base()
 
 class DBInterface():
     session = None
+    engine = None
+    
     @staticmethod
     def get_session():
-        s = sessionmaker(bind=engine, expire_on_commit=False)
+        s = sessionmaker(bind=DBInterface.engine, expire_on_commit=False)
         Session = scoped_session(s)          
         DBInterface.session = Session()
         return Session()
     
     @staticmethod    
     def s_session():
-        s = sessionmaker(bind=engine, expire_on_commit=False)
+        s = sessionmaker(bind=DBInterface.engine, expire_on_commit=False)
         Session = scoped_session(s)          
         return Session
-    
 
     @staticmethod
     def stop_session():
         DBInterface.session = None
         
     @staticmethod
-    def create_base():
-        Base.metadata.create_all(engine)
+    def create_base(baseconf = DBCONF_DEFAULT):
+        if DBInterface.engine is None:
+            DBInterface.engine = create_engine(baseconf, echo=False) 
+        Base.metadata.create_all(DBInterface.engine)
     
     @staticmethod    
-    def drop_base():
-        Base.metadata.drop_all(engine)
+    def drop_base(baseconf = DBCONF_DEFAULT):
+        if DBInterface.engine is None:
+            DBInterface.engine = create_engine(baseconf, echo=False) 
+        Base.metadata.drop_all(DBInterface.engine)
         
     @staticmethod    
-    def recreate_base():
-        DBInterface.drop_base()
-        DBInterface.create_base()
+    def recreate_base(baseconf = DBCONF_DEFAULT):
+        DBInterface.drop_base(baseconf)
+        DBInterface.create_base(baseconf)

@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
+from test_db_conf import TEST_DBCONF
 from indexer.input.reuters21578 import Reuters21578  
 from indexer.indexer import DBInterface, Document
 import unittest
 
 class TestIndex(unittest.TestCase):
   def setUp(self):
-    DBInterface.recreate_base()
+    DBInterface.recreate_base(TEST_DBCONF)
             
   def test_load_corpus(self):
     Reuters21578.load_corpus()

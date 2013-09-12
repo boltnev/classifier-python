@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 from indexer.indexer import *
+from test_db_conf import TEST_DBCONF
 import unittest
 
 class TestDatabase(unittest.TestCase):
     def setUp(self):
-        DBInterface.recreate_base()
+        DBInterface.recreate_base(TEST_DBCONF)
                             
     def test_create_document(self):
         document = Document({'text':"text is text", 'category':"Test", 'date':"17" })
