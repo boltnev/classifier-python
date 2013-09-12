@@ -36,7 +36,7 @@ class NaiveBayes():
         sql = "select sum(`word_features`.count) from word_features " +  \
               "join `documents` on `documents`.id = `word_features`.document_id " + \
               "join `words` on `words`.id =`word_features`.word_id " + \
-              "where word_id = %d and category='%s' AND `documents`.doc_type = 'TRAIN'; " % (word.id, category_name)
+              "where word_id = %d and category LIKE '%s' AND `documents`.doc_type = 'TRAIN'; " % (word.id,"%" + category_name + "%")
 
         word_category_count = s.execute(sql).scalar()
         if word_category_count is None:
@@ -45,7 +45,7 @@ class NaiveBayes():
         sql = "select sum(`word_features`.count) from word_features " +  \
               "join `documents` on `documents`.id = `word_features`.document_id " + \
               "join `words` on `words`.id =`word_features`.word_id " + \
-              "where category='%s' AND `documents`.doc_type = 'TRAIN'; " % (category_name,)
+              "where category LIKE '%s' AND `documents`.doc_type = 'TRAIN'; " % ("%" + category_name + "%",)
 
         all_category_word_count = s.execute(sql).scalar()
         if all_category_word_count is None:
