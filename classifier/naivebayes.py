@@ -31,7 +31,8 @@ class NaiveBayes():
     @staticmethod
     def likelihood(word, category_name):
         s = DBInterface.get_session()
-      
+        
+        # count word in category 
         sql = "select sum(`word_features`.count) from word_features " +  \
               "join `documents` on `documents`.id = `word_features`.document_id " + \
               "join `words` on `words`.id =`word_features`.word_id " + \
@@ -40,6 +41,7 @@ class NaiveBayes():
         word_category_count = s.execute(sql).scalar()
         if word_category_count is None:
             word_category_count = 0
+        # count of all words in category
         sql = "select sum(`word_features`.count) from word_features " +  \
               "join `documents` on `documents`.id = `word_features`.document_id " + \
               "join `words` on `words`.id =`word_features`.word_id " + \
@@ -49,7 +51,10 @@ class NaiveBayes():
         if all_category_word_count is None:
             all_category_word_count = 0
 
-        result = float(word_category_count + 1) / float(all_category_word_count + len(NaiveBayes.all_categories())) 
+        # all words collection count
+        all_words_count = s.query(Word).count()
+        
+        result = float(word_category_count + 1) / float(all_category_word_count + all_words_count ) 
         
         s.close()
         return result
@@ -63,4 +68,5 @@ class NaiveBayes():
 
         s.close()
         return categories      
+
  

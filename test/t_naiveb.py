@@ -33,9 +33,10 @@ class TestNaiveBayes(unittest.TestCase):
     def test_likehood(self):
         s = DBInterface.get_session()
         word = s.query(Word).filter_by(word="text").first()
+        all_words_count = s.query(Word).count()
         s.close()
-        self.assertEqual(NaiveBayes.likelihood(word, category1), float(4) / 22)
-        self.assertEqual(NaiveBayes.likelihood(word, category2), float(2) / 13)
+        self.assertEqual(NaiveBayes.likelihood(word, category1), float(4) / (20 + all_words_count))
+        self.assertEqual(NaiveBayes.likelihood(word, category2), float(2) / (11 + all_words_count))
 
     def test_aposteriory(self):
         s = DBInterface.get_session()
@@ -44,7 +45,7 @@ class TestNaiveBayes(unittest.TestCase):
         s.commit()
         s.close()
         document.index()
-        print NaiveBayes.aposteriory(category1, document)
+        self.assertGreater(NaiveBayes.aposteriory(category1, document), NaiveBayes.aposteriory(category2, document))
       
     def test_all_categories(self):
         self.assertEqual(NaiveBayes.all_categories(), [category1, category2])
