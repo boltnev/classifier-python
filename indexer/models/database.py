@@ -16,20 +16,24 @@ class DBInterface():
     engine = None
     
     @staticmethod
-    def get_session():
+    def get_session(baseconf = DBCONF_DEFAULT):
+        if DBInterface.engine is None:
+            DBInterface.engine = create_engine(baseconf, echo=False)
         s = sessionmaker(bind=DBInterface.engine, expire_on_commit=False)
         Session = scoped_session(s)          
         DBInterface.session = Session()
         return Session()
     
     @staticmethod    
-    def s_session():
+    def s_session(baseconf = DBCONF_DEFAULT):
+        if DBInterface.engine is None:
+            DBInterface.engine = create_engine(baseconf, echo=False)
         s = sessionmaker(bind=DBInterface.engine, expire_on_commit=False)
         Session = scoped_session(s)          
         return Session
 
     @staticmethod
-    def stop_session():
+    def stop_session(baseconf = DBCONF_DEFAULT):
         DBInterface.session = None
         
     @staticmethod

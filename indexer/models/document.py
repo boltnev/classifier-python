@@ -2,9 +2,11 @@ from sqlalchemy import Column, Text, Integer, String, Date, Boolean, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import exists
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
-from indexer.indexer import *
+from database import Base, DBInterface
+from word_feature import WordFeature 
 from nltk.tokenize import RegexpTokenizer
 import threading
+import indexer.models.word 
 
 VARCHARL = 256
 
@@ -48,9 +50,9 @@ class Document(Base):
         return token_dictionary
         
     def get_word(self, s, token_dictionary, token):
-        word = s.query(Word).filter_by(word=token).first() 
+        word = s.query(indexer.models.word.Word).filter_by(word=token).first() 
         if( word == None ):
-            word = Word(token, token_dictionary[token])
+            word = indexer.models.word.Word(token, token_dictionary[token])
             s.add(word)
             s.commit()
             

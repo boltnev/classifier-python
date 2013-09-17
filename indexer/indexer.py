@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 from models.database import DBInterface, Base
-from models.word import Word
-from models.word_feature import WordFeature
-from models.document import Document
+import models.word
+import models.document
+import models.word_feature
+Word = models.word.Word
+Document = models.document.Document
+WordFeature = models.word_feature.WordFeature
