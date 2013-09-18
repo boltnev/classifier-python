@@ -4,7 +4,7 @@ from test_db_conf import TEST_DBCONF
 from indexer.indexer import *
 from classifier.naivebayes import *
 import unittest
-
+import math 
 text1 = """This is test text. This text is for text classifier test"""
 text2 = """software testing is good and useful for all mankind"""
 category1 = "Testing"
@@ -30,7 +30,7 @@ class TestWord(unittest.TestCase):
         s = DBInterface.get_session()
         word = s.query(Word).filter_by(word="this").one()
         s.close()
-        print word.calculate_idf()
+        self.assertEqual(word.calculate_idf(), math.log( float(3) / 2) )
    
 if __name__ == '__main__':
     unittest.main()
