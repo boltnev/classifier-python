@@ -31,6 +31,14 @@ class TestWord(unittest.TestCase):
         word = s.query(Word).filter_by(word="this").one()
         s.close()
         self.assertEqual(word.calculate_idf(), math.log( float(3) / 2) )
+ 
+    def test_all_idf(self):
+        Word.idf_all()
+        s = DBInterface.get_session()
+        count = s.query(Word).filter_by(idf=None).count()
+        s.close()
+
+        self.assertEqual(count, 0)
    
 if __name__ == '__main__':
     unittest.main()

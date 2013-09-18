@@ -29,4 +29,18 @@ class Word(Base):
         s = DBInterface.get_session()
         all_docs_count = s.query(D).filter(D.indexed == True, D.doc_type=='TRAIN').count()
         this_word_count = s.execute("select sum(count) from word_features where word_id = %s" % self.id).scalar()
-        return math.log(float(all_docs_count) / int(this_word_count) )
+        self.idf = math.log(float(all_docs_count) / int(this_word_count))
+        s.add(self)
+        s.commit()
+        s.close()
+        return self.idf
+    
+    @staticmethod
+    def idf_all():
+        s = DBInterface.get_session()
+        words = s.query(Word).all()
+        s.close()
+        
+        for word in words:
+            word.calculate_idf()
+
