@@ -36,7 +36,6 @@ def upgrade():
         Column('id', sa.Integer, primary_key=True),
         Column('word', sa.String(VARCHARL / 4), index=True, unique=True),
         Column('count', sa.Integer, default=1, index=True),
-        Column('idf', sa.Float)
     )
     
     op.create_table(
