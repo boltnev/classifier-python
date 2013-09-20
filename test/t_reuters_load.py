@@ -9,10 +9,15 @@ class TestIndex(unittest.TestCase):
   def setUp(self):
     DBInterface.recreate_base(TEST_DBCONF)
             
-  def test_load_corpus(self):
+  def xtest_load_corpus(self):
     Reuters21578.load_corpus()
     count = DBInterface.get_session().query(Document).count()
     self.assertEqual(count, 21578)
-        
+       
+  def test_load_modapte(self):
+    Reuters21578.load_modapte()
+    count = DBInterface.get_session().query(Document).count()
+    self.assertEqual(count, 10788)
+ 
 if __name__ == '__main__':
   unittest.main()

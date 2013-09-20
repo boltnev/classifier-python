@@ -6,6 +6,10 @@ class Reuters21578:
     @staticmethod
     def load_corpus():
         reuters21578.load_corpus()
+ 
+    @staticmethod
+    def load_modapte():
+        reuters21578.load_modapte()
     
     @staticmethod
     def index_corpus():

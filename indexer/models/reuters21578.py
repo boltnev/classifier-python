@@ -39,6 +39,33 @@ def load_document(document):
   except:
     return False    
 
+def load_modapte_document(document, doc_type):
+  attributes = dict()
+  categories = list()
+  if doc_type.find("train"):  
+    attributes['doc_type'] = "TRAIN"
+  elif doc_type.find("test"):
+    attributes['doc_type'] = "TEST"
+
+  for element in document: 
+    if element.tag == 'category':
+      categories.append(element.text)
+    if element.tag == 'date':
+      attributes['date'] = element.text
+    if element.tag == 'title':
+      attributes['title'] = element.text
+    if element.tag == 'author':
+      attributes['author'] = element.text
+    if element.tag == 'text':
+      attributes['text'] = element.text
+   
+  attributes['category'] = ",".join(categories)
+  s = DBInterface.get_session()
+  document = Document(attributes)
+  s.add(document)
+  s.commit()
+  s.close()
+
 def load_corpus():
   i = 0
   for filename in filenames:
@@ -48,3 +75,16 @@ def load_corpus():
       load_document(child)
       i = i + 1
   print i
+
+def load_modapte():
+  i = 0
+  for filename in ['modapte/train.xml', 'modapte/test.xml']:
+    tree = ET.parse(directory + filename)
+    root = tree.getroot()
+    print len(root)
+    for child in root:
+      load_modapte_document(child, filename)
+      i = i + 1
+  print i
+
+ 
