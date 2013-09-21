@@ -24,6 +24,7 @@ s.commit()
 s.expunge_all()
 s.close()
 Document.index_all() 
+Word.idf_all()
 
 class TestWord(unittest.TestCase):
     def test_idf(self):

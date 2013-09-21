@@ -5,6 +5,7 @@ from database import Base
 import math
 import indexer.models.document 
 VARCHARL = 64
+import threading
 
 #/* Base */
 class Word(Base):
@@ -37,10 +38,24 @@ class Word(Base):
     
     @staticmethod
     def idf_all():
+      # s = DBInterface.get_session()
+      #   words = s.query(Word).all()
+      #   s.close()
+      #   
+      #   for word in words:
+      #       word.calculate_idf()
         s = DBInterface.get_session()
         words = s.query(Word).all()
         s.close()
-        
+        thread_list = []
         for word in words:
-            word.calculate_idf()
-
+          if len(thread_list) < 40:    
+              th = threading.Thread(target=word.calculate_idf)
+              th.start()
+              thread_list.append(th)    
+          else:
+              for thread in thread_list:
+                  thread.join()
+                  thread_list = []
+          for thread in thread_list:
+              thread.join()

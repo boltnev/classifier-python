@@ -3,9 +3,18 @@
 from indexer.indexer import *
 
 class NaiveBayes():
+    words = None
 
     def max_aposteriory(document):
         pass
+    
+    @staticmethod
+    def get_words():
+        if NaiveBayes.words is None:
+          s = DBInterface.get_session()
+          NaiveBayes.words = s.query(Word).from_statement("select * from words where count > 1 order by idf desc limit 100").all()
+          s.close()
+        return NaiveBayes.words
     
     @staticmethod
     def aposteriory(category_name, document):
@@ -14,8 +23,8 @@ class NaiveBayes():
         result = 0
         apriory = NaiveBayes.apriory(category_name)
         
-        for word_feature in document.words:
-            result += apriory * NaiveBayes.likelihood(word_feature.word, category_name)
+        for word in NaiveBayes.get_words():
+            result += apriory * NaiveBayes.likelihood(word, category_name)
         s.close()
         return result
 

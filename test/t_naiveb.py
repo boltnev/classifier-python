@@ -24,6 +24,7 @@ s.commit()
 s.expunge_all()
 s.close()
 Document.index_all() 
+Word.idf_all()
 
 class TestNaiveBayes(unittest.TestCase):
             

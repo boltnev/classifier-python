@@ -42,14 +42,15 @@ def load_document(document):
 def load_modapte_document(document, doc_type):
   attributes = dict()
   categories = list()
-  if doc_type.find("train"):  
+  if doc_type.find("train") >= 0:  
     attributes['doc_type'] = "TRAIN"
-  elif doc_type.find("test"):
+  elif doc_type.find("test") >= 0:
     attributes['doc_type'] = "TEST"
 
   for element in document: 
     if element.tag == 'category':
-      categories.append(element.text)
+      st = element.text
+      categories.append(st[st.find(".") + 1:])
     if element.tag == 'date':
       attributes['date'] = element.text
     if element.tag == 'title':
