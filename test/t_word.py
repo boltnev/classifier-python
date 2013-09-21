@@ -30,7 +30,7 @@ class TestWord(unittest.TestCase):
         s = DBInterface.get_session()
         word = s.query(Word).filter_by(word="this").one()
         s.close()
-        self.assertEqual(word.calculate_idf(), math.log( float(3) / 2) )
+        self.assertEqual(word.calculate_idf(), math.log( 3 / float(1) ) )
  
     def test_all_idf(self):
         Word.idf_all()

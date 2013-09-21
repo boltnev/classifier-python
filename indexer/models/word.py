@@ -28,7 +28,7 @@ class Word(Base):
         D = indexer.models.document.Document
         s = DBInterface.get_session()
         all_docs_count = s.query(D).filter(D.indexed == True, D.doc_type=='TRAIN').count()
-        this_word_count = s.execute("select sum(count) from word_features where word_id = %s" % self.id).scalar()
+        this_word_count = s.execute("select count(*) from word_features where word_id = %s" % self.id).scalar()
         self.idf = math.log(float(all_docs_count) / int(this_word_count))
         s.add(self)
         s.commit()
