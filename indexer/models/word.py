@@ -14,10 +14,12 @@ class Word(Base):
     word  = Column(String(VARCHARL), index=True, unique=True)
     count = Column(Integer, default=1, index=True)
     idf   = Column(Float) 
+    doc_count = Column(Integer, default=0, index=True)
 
     def __init__(self, word, count = 1):
         self.word = word
         self.count = count
+        self.doc_count = 0
 
     def __repl__(self):
         return self.word

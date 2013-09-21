@@ -23,7 +23,7 @@ class Document(Base):
     uniq_words = Column(Integer, index=True)
     doc_type = Column(String(VARCHARL), index=True)
     locked = Column(Boolean, default=False)
-    
+        
     def __init__(self, attributes):
         self.text = attributes['text']
         self.category = attributes.get('category', None)
@@ -50,12 +50,19 @@ class Document(Base):
         return token_dictionary
         
     def get_word(self, s, token_dictionary, token):
+        if self.doc_type == 'TRAIN':
+            count = token_dictionary[token]
+        else:
+            count = 0
         word = s.query(indexer.models.word.Word).filter_by(word=token).first() 
         if( word == None ):
-            word = indexer.models.word.Word(token, token_dictionary[token])
+            word = indexer.models.word.Word(token, count)
             s.add(word)
-            s.commit()
-            
+        else:
+            word.count += count
+        if self.doc_type == 'TRAIN':
+            word.doc_count += 1
+        s.commit()
         return word
 
     def word_to_index(self, s):

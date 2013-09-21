@@ -36,10 +36,21 @@ class TestWord(unittest.TestCase):
     def test_all_idf(self):
         Word.idf_all()
         s = DBInterface.get_session()
-        count = s.query(Word).filter_by(idf=None).count()
+        word = s.query(Word).filter_by(word="text").first()
+        s.close()
+        
+        s = DBInterface.get_session()
+        document = Document({'text':test_text, 'category':category1, 'doc_type':'TEST'})
+        s.add(document)
+        s.commit()
+        s.close()
+        document.index()
+        self.assertEqual(word.doc_count, 2)
+
+    def test_word_count(self):
+        s = DBInterface.get_session()
+        word = s.query(Word).filter_by(idf=None).count()
         s.close()
 
-        self.assertEqual(count, 0)
-   
 if __name__ == '__main__':
     unittest.main()
