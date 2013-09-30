@@ -13,7 +13,7 @@ down_revision = None
 from alembic import op
 import sqlalchemy as sa
 Column = sa.Column
-VARCHARL = 256
+VARCHARL = 128
 
 def upgrade():
     op.create_table(

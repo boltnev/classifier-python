@@ -1,10 +1,45 @@
 #!/usr/bin/env python 
 # coding :utf-8
 from indexer.indexer import *
+from sqlalchemy import text
 
 class NaiveBayes():
     words = None
+    categories = []
+    cache = {}
 
+    @staticmethod
+    def set_categories(categories):
+        NaiveBayes.categories = categories
+
+    @staticmethod
+    def build_cache():
+       words_in_brackets = "(" + ", ".join([str(int(word.id)) for word in NaiveBayes.get_words()]) + ")"
+
+       cache_sql = \
+           "SELECT sum(`word_features`.count) as word_count, word_id FROM `documents` " \
+           "JOIN `word_features` on `documents`.id = `word_features`.document_id " \
+           "WHERE word_id IN %s AND " \
+           "doc_type='TRAIN' AND " \
+           "category LIKE :category GROUP BY `word_features`.word_id" % (words_in_brackets,)
+
+       e = DBInterface.engine
+
+       overall_word_count = 0
+       for category in NaiveBayes.categories:
+           NaiveBayes.cache[category] = {}
+           all_category_words = 0
+           sql_result = e.execute(text(cache_sql), category="%" + category + "%")
+           for row in sql_result:
+               row_dict = dict(row)
+               all_category_words += int(row_dict[u'word_count'])
+               NaiveBayes.cache[category][int(row_dict[u'word_id'])] = int(row_dict[u'word_count'])
+           NaiveBayes.cache[category]["all"] = all_category_words
+           overall_word_count += all_category_words
+       NaiveBayes.cache["overall_word_count"] = overall_word_count
+       return NaiveBayes.cache
+
+    @staticmethod
     def max_aposteriory(document):
         pass
     
@@ -12,7 +47,8 @@ class NaiveBayes():
     def get_words():
         if NaiveBayes.words is None:
           s = DBInterface.get_session()
-          NaiveBayes.words = s.query(Word).from_statement("select * from words where count > 1 order by idf desc limit 100").all()
+          sql = "select * from words where doc_count < 1000"
+          NaiveBayes.words = s.query(Word).from_statement(sql).all()
           s.close()
         return NaiveBayes.words
     

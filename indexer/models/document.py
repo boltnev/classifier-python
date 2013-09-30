@@ -8,7 +8,7 @@ from nltk.tokenize import RegexpTokenizer
 import threading
 import indexer.models.word 
 
-VARCHARL = 256
+VARCHARL = 128
 
 class Document(Base):
     __tablename__ = 'documents'

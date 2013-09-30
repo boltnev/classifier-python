@@ -27,7 +27,17 @@ Document.index_all()
 Word.idf_all()
 
 class TestNaiveBayes(unittest.TestCase):
-            
+
+    def test_build_cache(self):
+        NaiveBayes.set_categories([category1, category2])
+        cache = NaiveBayes.build_cache()
+        self.assertEqual(cache["overall_word_count"], 31)
+        self.assertEqual(cache["Shakespeare"]["all"], 11)
+        self.assertEqual(cache["Testing"]["all"], 20)
+        self.assertEqual(cache["Testing"][1], 2) # word "for"
+        self.assertEqual(cache["Testing"][4], 3) # word "is"
+
+
     def test_apriory(self):
         self.assertEqual(NaiveBayes.apriory(category1), float(2) / 3)
         self.assertEqual(NaiveBayes.apriory(category2), float(1) / 3)
@@ -50,7 +60,7 @@ class TestNaiveBayes(unittest.TestCase):
         self.assertGreater(NaiveBayes.aposteriory(category1, document), NaiveBayes.aposteriory(category2, document))
       
     def test_all_categories(self):
-        self.assertEqual(NaiveBayes.all_categories(), [category1, category2])
+        self.assertEqual(NaiveBayes.all_categories().sort(), [category1, category2].sort())
 
 if __name__ == '__main__':
     unittest.main()

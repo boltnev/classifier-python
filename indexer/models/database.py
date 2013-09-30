@@ -9,6 +9,8 @@ DBCONF_DEFAULT = 'mysql+mysqldb://tclass:tclass@localhost/tclassifier'
 # another options
 #'sqlite:///index.sqlite'
 
+# TODO:refactoring. All is so bad
+
 Base = declarative_base()
 
 class DBInterface():
@@ -32,6 +34,7 @@ class DBInterface():
         Session = scoped_session(s)          
         return Session
 
+    # Not used TODO: del
     @staticmethod
     def stop_session(baseconf = DBCONF_DEFAULT):
         DBInterface.session = None

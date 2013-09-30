@@ -54,7 +54,7 @@ def load_modapte_document(document, doc_type):
     if element.tag == 'date':
       attributes['date'] = element.text
     if element.tag == 'title':
-      attributes['title'] = element.text
+      attributes['title'] = element.text[0:127]
     if element.tag == 'author':
       attributes['author'] = element.text
     if element.tag == 'text':
