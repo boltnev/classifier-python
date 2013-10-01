@@ -13,7 +13,7 @@ class NaiveBayes():
         NaiveBayes.categories = categories
 
     @staticmethod
-    def build_cache():
+    def build_word_cache():
        words_in_brackets = "(" + ", ".join([str(int(word.id)) for word in NaiveBayes.get_words()]) + ")"
 
        cache_sql = \
@@ -32,11 +32,28 @@ class NaiveBayes():
            sql_result = e.execute(text(cache_sql), category="%" + category + "%")
            for row in sql_result:
                row_dict = dict(row)
-               all_category_words += int(row_dict[u'word_count'])
-               NaiveBayes.cache[category][int(row_dict[u'word_id'])] = int(row_dict[u'word_count'])
+               all_category_words += row_dict[u'word_count']
+               NaiveBayes.cache[category][row_dict[u'word_id']] = row_dict[u'word_count']
            NaiveBayes.cache[category]["all"] = all_category_words
            overall_word_count += all_category_words
-       NaiveBayes.cache["overall_word_count"] = overall_word_count
+       NaiveBayes.cache["overall_word_count"] = long(overall_word_count)
+
+    @staticmethod
+    def build_doc_cache():
+        e = DBInterface.engine
+        cache_sql = "SELECT * FROM `documents` " \
+                    "WHERE doc_type='TRAIN' AND " \
+                    "category LIKE :category"
+        NaiveBayes.cache["overall_doc_count"] = 0
+        for category in NaiveBayes.categories:
+            sql_result = e.execute(text(cache_sql), category="%" + category + "%")
+            NaiveBayes.cache[category]["doc_count"] = sql_result.rowcount
+            NaiveBayes.cache["overall_doc_count"] += sql_result.rowcount
+
+    @staticmethod
+    def build_cache():
+       NaiveBayes.build_word_cache()
+       NaiveBayes.build_doc_cache()
        return NaiveBayes.cache
 
     @staticmethod
@@ -59,8 +76,8 @@ class NaiveBayes():
         result = 0
         apriory = NaiveBayes.apriory(category_name)
         
-        for word in NaiveBayes.get_words():
-            result += apriory * NaiveBayes.likelihood(word, category_name)
+        for word_obj in document.words:
+            result += apriory * NaiveBayes.likelihood(word_obj.word, category_name)
         s.close()
         return result
 
@@ -114,4 +131,28 @@ class NaiveBayes():
         s.close()
         return categories      
 
- 
+    @staticmethod
+    def aposteriory_f(category_name, document):
+        s = DBInterface.get_session()
+        s.add(document)
+        result = 0
+        apriory = NaiveBayes.apriory_f(category_name)
+        
+        for word_obj in document.words:
+            result += apriory * NaiveBayes.likelihood_f(word_obj.word, category_name)
+        s.close()
+        return result
+
+    @staticmethod
+    def apriory_f(category_name):
+        return float(NaiveBayes.cache[category_name]["doc_count"]) / NaiveBayes.cache["overall_doc_count"]
+    
+    @staticmethod
+    def likelihood_f(word, category_name):
+        all_words_count = NaiveBayes.cache["overall_word_count"]
+        word_category_count = NaiveBayes.cache[category_name].get(word.id, 0)
+        all_category_word_count = NaiveBayes.cache[category_name]["all"]
+        return float(word_category_count + 1) / float(all_category_word_count + all_words_count )
+        
+
+
