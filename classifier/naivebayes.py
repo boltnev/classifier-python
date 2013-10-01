@@ -32,8 +32,8 @@ class NaiveBayes():
            sql_result = e.execute(text(cache_sql), category="%" + category + "%")
            for row in sql_result:
                row_dict = dict(row)
-               all_category_words += row_dict[u'word_count']
-               NaiveBayes.cache[category][row_dict[u'word_id']] = row_dict[u'word_count']
+               all_category_words += long(row_dict[u'word_count'])
+               NaiveBayes.cache[category][row_dict[u'word_id']] = long(row_dict[u'word_count'])
            NaiveBayes.cache[category]["all"] = all_category_words
            overall_word_count += all_category_words
        NaiveBayes.cache["overall_word_count"] = long(overall_word_count)
@@ -58,7 +58,14 @@ class NaiveBayes():
 
     @staticmethod
     def max_aposteriory(document):
-        pass
+        previous = 0
+        result = None
+        for category in NaiveBayes.categories:
+            aposteriory = NaiveBayes.aposteriory_f(category, document)
+            if aposteriory >= previous:
+                result = category
+                previous = aposteriory
+        return result
     
     @staticmethod
     def get_words():

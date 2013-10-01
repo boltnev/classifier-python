@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # coding :utf-8
+import cProfile
 
 from indexer.indexer import *
 from classifier.naivebayes import NaiveBayes
-import cProfile
 
 s = DBInterface.get_session()
 doc = s.query(Document).filter_by(doc_type="TEST").first()

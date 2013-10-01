@@ -40,6 +40,9 @@ class TestNaiveBayes(unittest.TestCase):
         self.assertEqual(cache["Testing"][1], 2) # word "for"
         self.assertEqual(cache["Testing"][4], 3) # word "is"
 
+    def test_all_categories(self):
+        self.assertEqual(NaiveBayes.all_categories().sort(), [category1, category2].sort())
+
     def test_apriory(self):
         self.assertEqual(NaiveBayes.apriory(category1), float(2) / 3)
         self.assertEqual(NaiveBayes.apriory(category2), float(1) / 3)
@@ -85,18 +88,26 @@ class TestNaiveBayes(unittest.TestCase):
 
     def test_aposteriory_f(self):
         NaiveBayes.set_categories([category1, category2])
-        NaiveBayes.build_cache()
         s = DBInterface.get_session()
         document = Document({'text':test_text, 'category':'', 'doc_type':'TEST'})
         s.add(document)
         s.commit()
+        NaiveBayes.build_cache()
         s.close()
         document.index()
         self.assertGreater(NaiveBayes.aposteriory_f(category1, document), NaiveBayes.aposteriory_f(category2, document))
 
 
-    def test_all_categories(self):
-        self.assertEqual(NaiveBayes.all_categories().sort(), [category1, category2].sort())
+    def test_max_aposteriory(self):
+        NaiveBayes.set_categories([category1, category2])
+        s = DBInterface.get_session()
+        document = Document({'text':test_text, 'category':'', 'doc_type':'TEST'})
+        s.add(document)
+        s.commit()
+        NaiveBayes.build_cache()
+        s.close()
+        document.index()
+        self.assertEqual(NaiveBayes.max_aposteriory(document), category1)
 
 if __name__ == '__main__':
     unittest.main()
