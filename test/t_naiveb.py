@@ -13,20 +13,24 @@ text3 = """To be or not to be? that is the text question"""
 category2 = "Shakespeare"
  
 test_text = """I'm doing text processing unit test in python. I think it is very good""" # cat1
-DBInterface.recreate_base(TEST_DBCONF)
-
-document1 = Document({'text':text1, 'category':category1, 'doc_type':'TRAIN'})
-document2 = Document({'text':text2, 'category':category1, 'doc_type':'TRAIN'})
-document3 = Document({'text':text3, 'category':category2, 'doc_type':'TRAIN'})
-s = DBInterface.get_session()
-s.add_all([document1, document2, document3])
-s.commit()
-s.expunge_all()
-s.close()
-Document.index_all() 
-Word.idf_all()
 
 class TestNaiveBayes(unittest.TestCase):
+    database_prepared = False
+
+    def setUp(self):
+        if not TestNaiveBayes.database_prepared:
+            DBInterface.recreate_base(TEST_DBCONF)
+            document1 = Document({'text':text1, 'category':category1, 'doc_type':'TRAIN'})
+            document2 = Document({'text':text2, 'category':category1, 'doc_type':'TRAIN'})
+            document3 = Document({'text':text3, 'category':category2, 'doc_type':'TRAIN'})
+            s = DBInterface.get_session()
+            s.add_all([document1, document2, document3])
+            s.commit()
+            s.expunge_all()
+            s.close()
+            Document.index_all()
+            Word.idf_all()
+        TestNaiveBayes.database_prepared = True
 
     def test_build_cache(self):
         NaiveBayes.set_categories([category1, category2])

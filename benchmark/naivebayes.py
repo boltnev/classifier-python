@@ -11,7 +11,7 @@ s = DBInterface.get_session()
 docs = s.query(Document).filter_by(doc_type="TEST").all()
 s.close()
 
-NaiveBayes.set_categories(["earn", "acquisitions", "money-fx",
+NaiveBayes.set_categories(["earn", "acq", "money-fx",
                            "grain", "crude", "trade",
                            "interest", "ship", "wheat", "corn"])
 
