@@ -21,9 +21,7 @@ class TestWord(unittest.TestCase):
 
     def setUp(self):
         if not TestWord.database_prepared:
-
             DBInterface.recreate_base(TEST_DBCONF)
-
             document1 = Document({'text':text1, 'category':category1, 'doc_type':'TRAIN'})
             document2 = Document({'text':text2, 'category':category1, 'doc_type':'TRAIN'})
             document3 = Document({'text':text3, 'category':category2, 'doc_type':'TRAIN'})
