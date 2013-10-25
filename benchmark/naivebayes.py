@@ -24,8 +24,6 @@ cache.set_words(words)
 
 cache.build()
 
-#gconf.cache = cache
-
 naivebayes.cache = cache
 
 naivebayes.use_apriori = False

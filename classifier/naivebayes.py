@@ -7,13 +7,17 @@ use_apriori = True
 
 
 def max_aposteriori(document):
-    previous = 0
+    previous = None
     result = None
     for category in cache.categories:
-        new_value = aposteriori(category, document)
-        if new_value >= previous:
+        if not previous:
+            previous = aposteriori(category, document)
             result = category
-            previous = new_value
+        else:                
+            new_value = aposteriori(category, document)
+            if new_value >= previous:
+                result = category
+                previous = new_value
     return result
 
 
@@ -22,6 +26,7 @@ def apriori(category_name):
         return float(cache.storage[category_name]["doc_count"]) / cache.storage["overall_doc_count"]
     else:
         return 1
+
 
 def aposteriori(category_name, document):
     s = DBInterface.get_session()
