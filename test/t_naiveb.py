@@ -36,12 +36,18 @@ class TestNaiveBayes(unittest.TestCase):
             gconf.cache.set_categories([category1, category2])
             s.close
             gconf.cache.build()
+            naivebayes.cache = gconf.cache
+        naivebayes.use_apriori = True
         TestNaiveBayes.database_prepared = True
 
 
-    def test_apriory(self):
-        self.assertEqual(naivebayes.apriory(category1), float(2) / 3)
-        self.assertEqual(naivebayes.apriory(category2), float(1) / 3)
+    def test_apriori(self):
+        self.assertEqual(naivebayes.apriori(category1), float(2) / 3)
+        self.assertEqual(naivebayes.apriori(category2), float(1) / 3)
+        naivebayes.use_apriori = False
+
+        self.assertEqual(naivebayes.apriori(category1), 1)
+        self.assertEqual(naivebayes.apriori(category2), 1)
 
 
     def test_likelihood(self):
@@ -53,14 +59,14 @@ class TestNaiveBayes(unittest.TestCase):
         self.assertEqual(naivebayes.likelihood(word, category2), float(2) / (11 + all_words_count))
 
 
-    def test_aposteriory(self):
+    def test_aposteriori(self):
         s = DBInterface.get_session()
         document = Document({'text':test_text, 'category':'', 'doc_type':'TEST'})
         s.add(document)
         s.commit()
         s.close()
         document.index()
-        self.assertGreater(naivebayes.aposteriory(category1, document), naivebayes.aposteriory(category2, document))
+        self.assertGreater(naivebayes.aposteriori(category1, document), naivebayes.aposteriori(category2, document))
 
     def test_max_aposteriory(self):
         s = DBInterface.get_session()
@@ -69,7 +75,7 @@ class TestNaiveBayes(unittest.TestCase):
         s.commit()
         s.close()
         document.index()
-        self.assertEqual(naivebayes.max_aposteriory(document), category1)
+        self.assertEqual(naivebayes.max_aposteriori(document), category1)
 
 if __name__ == '__main__':
     unittest.main()

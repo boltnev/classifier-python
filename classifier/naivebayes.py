@@ -1,31 +1,38 @@
 #!/usr/bin/env python 
 # coding :utf-8
-from config.gconf import cache
 from indexer.indexer import *
+import math
+cache = None
+use_apriori = True
 
 
-def max_aposteriory(document):
+def max_aposteriori(document):
     previous = 0
     result = None
     for category in cache.categories:
-        if aposteriory(category, document) >= previous:
+        new_value = aposteriori(category, document)
+        if new_value >= previous:
             result = category
-            previous = aposteriory
+            previous = new_value
     return result
 
 
-def apriory(category_name):
-    return float(cache.storage[category_name]["doc_count"]) / cache.storage["overall_doc_count"]
+def apriori(category_name):
+    if use_apriori:
+        return float(cache.storage[category_name]["doc_count"]) / cache.storage["overall_doc_count"]
+    else:
+        return 1
 
-
-def aposteriory(category_name, document):
+def aposteriori(category_name, document):
     s = DBInterface.get_session()
     s.add(document)
     result = 0
-    category_apriory = apriory(category_name)
+    category_apriori = apriori(category_name)
 
     for word_obj in document.words:
-        result += category_apriory * likelihood(word_obj.word, category_name)
+        result += math.log(likelihood(word_obj.word, category_name))
+
+    result *= category_apriori
     s.close()
     return result
 
