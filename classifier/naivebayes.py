@@ -37,7 +37,7 @@ def aposteriori(category_name, document):
     for word_obj in document.words:
         result += math.log(likelihood(word_obj.word, category_name))
 
-    result *= category_apriori
+    result += math.log(category_apriori)
     s.close()
     return result
 

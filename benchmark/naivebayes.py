@@ -26,7 +26,7 @@ cache.build()
 
 naivebayes.cache = cache
 
-naivebayes.use_apriori = False
+naivebayes.use_apriori = True
 
 right_answ = 0.0
 i = 0
