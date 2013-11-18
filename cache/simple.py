@@ -58,3 +58,6 @@ class Cache():
     def rebuild(self):
         self.storage = {}
         self.build()
+
+    def tfidf(self, word):
+        pass
